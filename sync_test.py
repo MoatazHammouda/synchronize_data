@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import shutil
 
-wd = "/home/pi/Desktop/MetaBase-CSV-Bash/"
+wd = "/home/pi/Desktop/MetaBase-CSV-Bash-Test/"
 
 lst = os.listdir(wd)
 
@@ -25,13 +25,22 @@ for l in lst:
 	# 	left_mag = pd.read_csv(wd+l, usecols = ["epoc (ms)","x-axis (T)","y-axis (T)","z-axis (T)"])
 	if "Right" in l and "Accelerometer" in l:
 		right_acc_name = l
-		right_acc = pd.read_csv(wd+l, usecols = ["epoc (ms)","x-axis (g)","y-axis (g)","z-axis (g)"])
+		try:
+			right_acc = pd.read_csv(wd+l, usecols = ["epoc (ms)","x-axis (g)","y-axis (g)","z-axis (g)"])
+		except:
+			right_acc = pd.read_csv(wd+l, usecols = ["epoch (ms)","x-axis (g)","y-axis (g)","z-axis (g)"])
 	elif "Right" in l and "Gyroscope" in l:
 		right_gyro_name = l
-		right_gyro = pd.read_csv(wd+l, usecols = ["epoc (ms)","x-axis (deg/s)","y-axis (deg/s)","z-axis (deg/s)"])
+		try:
+			right_gyro = pd.read_csv(wd+l, usecols = ["epoc (ms)","x-axis (deg/s)","y-axis (deg/s)","z-axis (deg/s)"])
+		except:
+			right_gyro = pd.read_csv(wd+l, usecols = ["epoch (ms)","x-axis (deg/s)","y-axis (deg/s)","z-axis (deg/s)"])
 	elif "Right" in l and "Magnetometer" in l:
 		right_mag_name = l
-		right_mag = pd.read_csv(wd+l, usecols = ["epoc (ms)","x-axis (T)","y-axis (T)","z-axis (T)"])
+		try:
+			right_mag = pd.read_csv(wd+l, usecols = ["epoc (ms)","x-axis (T)","y-axis (T)","z-axis (T)"])
+		except:
+			right_mag = pd.read_csv(wd+l, usecols = ["epoch (ms)","x-axis (T)","y-axis (T)","z-axis (T)"])
 
 #if left_acc is None or left_gyro is None or right_acc is None or right_gyro is None:
 if right_acc is None or right_gyro is None:
@@ -42,8 +51,12 @@ else:
 	#filenames = [left_mag_name,left_gyro_name,left_acc_name,right_mag_name,right_gyro_name,right_acc_name]
 	filenames = [right_mag_name,right_gyro_name,right_acc_name]
 	#Left Leg
-	df_right_1 = pd.merge_asof(right_acc.sort_values('epoch (ms)'), right_gyro, 'epoch (ms)')
-	df_right = pd.merge_asof(df_right_1, right_mag, 'epoch (ms)')
+	try:
+		df_right_1 = pd.merge_asof(right_acc.sort_values('epoch (ms)'), right_gyro, 'epoch (ms)')
+		df_right = pd.merge_asof(df_right_1, right_mag, 'epoch (ms)')
+	except:
+		df_right_1 = pd.merge_asof(right_acc.sort_values('epoc (ms)'), right_gyro, 'epoc (ms)')
+		df_right = pd.merge_asof(df_right_1, right_mag, 'epoc (ms)')
 
 	#Both Legs
 	# if len(df_left) < len(df_right):
